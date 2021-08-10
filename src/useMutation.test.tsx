@@ -6,6 +6,7 @@ import { rest } from "msw";
 import { useUnsweetenedMutation } from "./useMutation";
 import { useUnsweetenedQuery } from "./useQuery";
 import useQueryClient from "./useQueryClient";
+import superjson from "superjson";
 
 let serverData: { numbers: Array<number> } = {
   numbers: [],
@@ -21,14 +22,14 @@ const server = setupServer(
     }
 
     if (key === "mutations/push") {
-      const newNumber = (req.body as any).number as number;
+      const newNumber = (req.body as any).json.number as number;
       serverData.numbers.push(newNumber);
     }
 
-    return res(ctx.json({}));
+    return res(ctx.text(superjson.stringify({})));
   }),
   rest.get("/abledev/call-query", (_req, res, ctx) => {
-    return res(ctx.json(serverData.numbers));
+    return res(ctx.text(superjson.stringify(serverData.numbers)));
   }),
 );
 

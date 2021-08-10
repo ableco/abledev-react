@@ -4,6 +4,7 @@ import { useUnsweetenedQuery } from "./useQuery";
 import wrapRootComponent from "./wrapRootComponent";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
+import superjson from "superjson";
 
 const server = setupServer(
   rest.get("/abledev/call-query", (req, res, ctx) => {
@@ -11,7 +12,7 @@ const server = setupServer(
     if (req.url.searchParams.get("name")) {
       response.name = req.url.searchParams.get("name");
     }
-    return res(ctx.json(response));
+    return res(ctx.text(superjson.stringify(response)));
   }),
 );
 

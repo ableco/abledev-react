@@ -52,6 +52,7 @@ function useUnsweetenedQuery<ResultType>(
             "Content-Type": "application/json",
           },
         });
+
         const responseText = await response.text();
         const responseData = superjson.parse(responseText);
         return responseData as ResultType;
