@@ -1,6 +1,6 @@
 {
   "name": "@ableco/abledev-react",
-  "version": "0.0.1-alpha1",
+  "version": "0.0.1-alpha3",
   "description": "",
   "main": "dist/abledev-react.js",
   "types": "dist/index.d.ts",
