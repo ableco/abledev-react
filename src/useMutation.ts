@@ -1,5 +1,6 @@
 import { useMutation as useRQMutation, UseMutationOptions } from "react-query";
 import { AnyFunction, FirstParamOrFallback } from "./ts-helpers";
+import superjson from "superjson";
 
 type OptionsFromResultAndArgsTypes<ResultType, ArgumentsType> =
   UseMutationOptions<ResultType, unknown, ArgumentsType, string>;
@@ -46,7 +47,7 @@ function useUnsweetenedMutation<ResultType, ArgumentsType>(
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(mutationArguments),
+          body: superjson.stringify(mutationArguments),
         });
         const responseData = await response.json();
         return responseData as unknown as ResultType;

@@ -11,7 +11,8 @@
   "author": "Julio García",
   "license": "ISC",
   "dependencies": {
-    "react-query": "^3.19.2"
+    "react-query": "^3.19.2",
+    "superjson": "^1.7.5"
   },
   "peerDependencies": {
     "react": ">=16"

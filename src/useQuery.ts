@@ -1,5 +1,6 @@
 import { useQuery as useRQQuery, UseQueryOptions } from "react-query";
 import { AnyFunction, FirstParamOrFallback } from "./ts-helpers";
+import superjson from "superjson";
 
 type OptionsFromResultType<ResultType> = UseQueryOptions<
   ResultType,
@@ -51,8 +52,9 @@ function useUnsweetenedQuery<ResultType>(
             "Content-Type": "application/json",
           },
         });
-        const responseData = await response.json();
-        return responseData as unknown as ResultType;
+        const responseText = await response.text();
+        const responseData = superjson.parse(responseText);
+        return responseData as ResultType;
       } catch (error) {
         throw error;
       }
