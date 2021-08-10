@@ -1,9 +1,18 @@
-import { useMutation as useRQMutation } from "react-query";
+import { useMutation as useRQMutation, UseMutationOptions } from "react-query";
+import { AnyFunction, FirstParamOrFallback } from "./ts-helpers";
 
-type AnyFunction = (...args: any) => any;
+type OptionsFromResultAndArgsTypes<ResultType, ArgumentsType> =
+  UseMutationOptions<ResultType, unknown, ArgumentsType, string>;
+
+type OptionsFromMutationKey<MutationKey extends AnyFunction> =
+  OptionsFromResultAndArgsTypes<
+    ReturnType<MutationKey>,
+    FirstParamOrFallback<MutationKey, object>
+  >;
 
 function useMutation<MutationKey extends AnyFunction>(
   mutationKey: MutationKey,
+  mutationConfiguration: OptionsFromMutationKey<MutationKey> = {},
 ) {
   // This is not a arbitrary convertion. queryKey works differently between the TS world
   // and the runtime world:
@@ -11,20 +20,44 @@ function useMutation<MutationKey extends AnyFunction>(
   // - In the runtime world, this is a string
   const mutationKeyAsString = mutationKey as unknown as string;
 
-  return useRQMutation(mutationKeyAsString, async (args: object = {}) => {
-    const url = new URL(`${location.origin}/abledev/call-mutation`);
-    url.search = new URLSearchParams({ key: mutationKeyAsString }).toString();
-    return fetch(url.toString(), {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(args),
-    }).then((response) => {
-      return response.json() as ReturnType<MutationKey>;
-    });
-  });
+  return useUnsweetenedMutation<
+    ReturnType<MutationKey>,
+    FirstParamOrFallback<MutationKey, object>
+  >(mutationKeyAsString, mutationConfiguration);
 }
+
+function useUnsweetenedMutation<ResultType, ArgumentsType>(
+  mutationKey: string,
+  mutationConfiguration: OptionsFromResultAndArgsTypes<
+    ResultType,
+    ArgumentsType
+  > = {},
+) {
+  return useRQMutation<ResultType, unknown, ArgumentsType, string>(
+    mutationKey,
+    async (mutationArguments) => {
+      const url = new URL(`${location.origin}/abledev/call-mutation`);
+      url.search = new URLSearchParams({ key: mutationKey }).toString();
+
+      try {
+        const response = await fetch(url.toString(), {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(mutationArguments),
+        });
+        const responseData = await response.json();
+        return responseData as unknown as ResultType;
+      } catch (error) {
+        throw error;
+      }
+    },
+    mutationConfiguration,
+  );
+}
+
+export { useUnsweetenedMutation };
 
 export default useMutation;

@@ -1,10 +1,11 @@
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-const queryClient = new QueryClient();
+function wrapRootComponent<PropsType>(Component: React.FC<PropsType>) {
+  let queryClient: QueryClient;
 
-function wrapRootComponent(Component: React.FC) {
-  const AbledevWrapper = (props: any) => {
+  const AbledevWrapper = (props: PropsType) => {
+    queryClient ??= new QueryClient();
     return (
       <QueryClientProvider client={queryClient}>
         <Component {...props} />
