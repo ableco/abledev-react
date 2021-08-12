@@ -19,3 +19,15 @@ the root of the isolated component. This serves 2 purposes:
 1. Streamline the inclusion of React Query's `QueryClientProvider`, which would
    require the user to create 2 components with some specific behavior.
 2. Provide a central way to configure react-related behavior such as `suspense`.
+
+## How to develop?
+
+1. Clone this repository and `cd` into it.
+2. Install the dependencies: `yarn`.
+3. Play with the tests: `yarn test --watch`.
+4. To deploy:
+   1. Change the version in the `package.json`'s `version` field. As we're in a
+      very alpha state, just increase the number next to alpha there.
+   2. Commit the `package.json` change.
+   3. Go to github and create a release. It will publish the package to
+      `@ableco/abledev-react`.
